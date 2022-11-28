@@ -183,10 +183,8 @@ xr_coff_interp = xr_coff.interp_like(xr_ts_hr_unmasked)
 H = height(xr_ts_hr_corr['BT'],xr_coff_interp['lapse_rate'], xr_coff_interp['offset'])
 
 delta = H - xrwl['cloud_top'].interp_like(H)
-
-xr_coff_corr_interp = xr_coff_interp
-xr_coff_corr_interp['offset'] = xr_coff_interp['offset'] - delta.interpolate_na(dim='time', method='linear')
-H = height(xr_ts_hr_corr['BT'],xr_coff_corr_interp['lapse_rate'], xr_coff_corr_interp['offset'])
+off_coarsed = (xr_coff_interp['offset'] - delta).coarsen(time=600, boundary='trim').mean().interp_like(xr_ts_hr_unmasked)
+H = height(xr_ts_hr_corr['BT'] ,xr_coff_interp['lapse_rate'], off_coarsed)
 
 print('...')
 
