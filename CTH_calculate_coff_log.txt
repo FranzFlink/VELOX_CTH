@@ -1,0 +1,15 @@
+Flight_20200126 Lapse Rate -189.93 ± 10.05 m/K
+Flight_20200128 Lapse Rate -187.91 ± 11.24 m/K
+Flight_20200130 Lapse Rate -178.48 ± 9.92 m/K
+Flight_20200131 Lapse Rate -202.06 ± 19.18 m/K
+Flight_20200202 Lapse Rate -162.86 ± 7.26 m/K
+Flight_20200205 Lapse Rate -165.05 ± 9.39 m/K
+Flight_20200207 Lapse Rate -163.81 ± 9.36 m/K
+Flight_20200209 Lapse Rate -153.09 ± 5.36 m/K
+Flight_20200211 Lapse Rate -166.83 ± 8.69 m/K
+Flight_20200213 Lapse Rate -187.75 ± 10.97 m/K
+All Flight Statistics:
+mean lapse_rat of all filghts = -175.78
+lapse_rate_std of all flights = 14.86
+mean of std of all flights    = 10.14
+std of std of all flights     = 3.44
