@@ -1,0 +1,6 @@
+Flight_20200207 Lapse Rate -163.81 ± 9.36 m/K
+All Flight Statistics:
+mean lapse_rat of all filghts = -163.81
+lapse_rate_std of all flights = 0.00
+mean of std of all flights    = 9.36
+std of std of all flights     = 0.00

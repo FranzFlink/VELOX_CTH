@@ -14,13 +14,23 @@ from scipy.stats import linregress
 from numba import njit
 from tqdm import tqdm
 from CTH_helper import *
+import sys
 
 
 from time import time as pytime
 
-f = 'Flight_20200205a'
+#fnum = input('enter flight in YYYYMMDD format')
+#input the flightdate in formt YYYYMMDD as bash argument to automate generation of all flights
 
-fnum = str(f[7:-1])
+fnum = sys.argv[1]
+
+#f = 'Flight_20200205a'
+f = f'Flight_{fnum}a'
+
+print(f'Processing {f}')
+
+
+#fnum = str(f[7:-1])
 
 Y, M, D = int(fnum[0:4]), int(fnum[4:6]), int(fnum[6:])
 f_format = f'HALO-{fnum[6:]}{fnum[4:6]}'
@@ -28,11 +38,19 @@ f_format = f'HALO-{fnum[6:]}{fnum[4:6]}'
 path = '/projekt_agmwend/data/EUREC4A/06_Flights/'+f+'/VELOX/VELOX_327kveL/'
 tb_name = 'EUREC4A_HALO_VELOX_BT_Filter_01_'+str(f[7:-1])+'_v0.4.nc'
 cm_name = 'EUREC4A_HALO_VELOX_cloudmask_'+str(f[7:-1])+'_v4.1.nc'
-params_name = glob.glob(os.path.join('/projekt_agmwend/data/EUREC4A/06_Flights',f,'BAHAMAS')+'/*.nc')[0]
+# params_name = glob.glob(os.path.join('/projekt_agmwend/data/EUREC4A/06_Flights',f,'BAHAMAS'+'*.nc'))[0]
 wl_name = glob.glob(os.path.join('/projekt_agmwend/data/EUREC4A/06_Flights', f, 'WALES','*V2.1.nc'))[0]
+
+params_name = glob.glob(os.path.join('/projekt_agmwend/data/EUREC4A/06_Flights', f, 'BAHAMAS','*.nc'))[0]
+
 
 #name of the output file to be generated
 cth_name = 'EUREC4A_HALO_VELOX_CTH_'+f+'_'
+
+#change to path
+
+os.chdir(path)
+print(f'working-directory is {os.getcwd()}')
 
 ### xrcm : Cloud Mask 
 ### xrtb : Brightness Temperature
@@ -44,7 +62,7 @@ xrcm  = xr.open_dataset(path+cm_name)
 xrtb = xr.open_dataset(path+tb_name)
 xrwl = xr.open_dataset(wl_name)
 xrparams = xr.open_dataset(params_name)
-xrcoff = xr.open_dataset(f'/home/jomueller/{fnum}_coffs.nc')
+xrcoff = xr.open_dataset(f'/projekt_agmwend/data/EUREC4A/11_VELOX-Tools/VELOX_CTH/coffs_v2/{fnum}_coffs.nc', engine='netcdf4')
 
 all_flight_segments = eurec4a.get_flight_segments()
 circles = [item for item in all_flight_segments['HALO'][f'HALO-{str(f[11:-1])}']['segments'] if 'circle' in item['name'] and len(item['dropsondes']['GOOD']) > 5 ]
@@ -172,6 +190,12 @@ offsets = averaged_offset.interpolate_na(dim="time", method="linear").values
 ranges = [np.arange(np.where(xrtb.time==xrtb.time.sel(time=circles[i]['start'], method='nearest'))[0], np.where(xrtb.time==xrtb.time.sel(time=circles[i]['end'], method='nearest'))[0]) for i in range(len(circles))]
 c = 0
 
+if not os.path.isdir('VELOX_CTH'):
+    os.mkdir('VELOX_CTH')
+    print('created folder VELOX_CTH')
+else:
+    print('folder VELOX_CTH already exists')
+
 for circle in ranges:
     c += 1
     print(f'processing circle {c} out of {len(circles)}')
@@ -241,8 +265,8 @@ for circle in ranges:
             created_on = '2022-02-06'
         )
         )
-    print(f'Saving CTHs to {cth_name}{circle_name}')
-    output_dataset.to_netcdf(cth_name+circle_name)
+    print(f'Saving CTHs to {path}VELOX_CTH/{cth_name}{circle_name}')
+    output_dataset.to_netcdf(path+'VELOX_CTH/'+cth_name+circle_name)
     output_dataset.close()
 
 
